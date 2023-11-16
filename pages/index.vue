@@ -1,5 +1,7 @@
 <script setup>
-
+    var config = useRuntimeConfig()
+    var fetch = await useFetch("/api/search", {baseURL: config.public.apiBaseUrl})
+    var challenges = fetch.data.value
 </script>
 
 <template>
@@ -48,8 +50,16 @@
                 </div>
             </div>
         </div>
-        <div class="flex w-full h-full px-48">
-            
+        <div class="flex flex-col gap-3 w-full h-full px-48">
+            <div class="w-full card-color rounded-md p-5 flex flex-row cursor-pointer" v-for="challenge in challenges" @click="navigateTo('/challenge?id=' + challenge._id)">
+                <p class="w-96">{{ challenge.name }}</p>
+                <p class="w-5">{{ challenge.difficulty }}</p>
+                <div class="flex flex-row gap-5 grow pl-24">
+                    <p v-for="lang in Object.keys(challenge.code)">
+                        {{ lang }}
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </template>
