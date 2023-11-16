@@ -1,3 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body
+{
+    background-color: rgb(26 26 26);
+}
+
+.card-color
+{
+    background-color: rgb(42 42 42);
+}
+
+p
+{
+    color: white
+}
+
+input
+{
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    border: 0 solid;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    border-color: hsl(var(--sd-border));
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    margin: 0;
+    overflow: visible;
+    display: block;
+    width: 100%;
+    border-radius: .375rem;
+    border-style: none;
+    padding-bottom: .375rem;
+    padding-top: .375rem;
+    padding-left: 5px;
+    padding-right: .75rem;
+    line-height: 1.25rem;
+    outline: 2px solid #0000;
+    outline-offset: 2px;
+    touch-action: manipulation;
+    -webkit-appearance: none;
+    background-color: #ffffff1a;
+    color: white;
+}
+
+option
+{
+    background-color: #ffffff1a;
+    color: black;
+
+}
+
+select
+{
+    background-color: #ffffff1a;
+    color: white;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding: 4px;
+    border-radius: 5px;
+}
