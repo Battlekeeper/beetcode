@@ -50,6 +50,8 @@ async function runCode() {
 
     var fetch = await useFetch("/api/runcode/" + route.query.id, { baseURL: config.public.apiBaseUrl, method: "POST", body: data })
     codeOutput.value = fetch.data.value
+    runMsg.value = "Run Code"
+
 }
 
 </script>
@@ -77,7 +79,7 @@ async function runCode() {
                     <div class="flex flex-row justify-between w-full">
                         <div>
                             <button class="bg-gray-500 px-3 py-1 rounded-md text-white font-bold"
-                                style="background-color: #2d7567;" @click="runCode()">{{ runMsg }}</button>
+                                style="background-color: #2d7567;" @click="runCode()" :disabled="runMsg == 'Running...'">{{ runMsg }}</button>
                         </div> 
                         <select class="w-fit" @change="changeLang($event)">
                             <option v-for="lang in Object.keys(challenge.code)" :value="lang">{{ lang }}</option>
