@@ -67,3 +67,5 @@ def run_code(id):
 
     response = validateCode(recivedData["code"], doc["code"][recivedData["lang"]]["exampleFixture"], recivedData["lang"])
     return response
+
+app.run("0.0.0.0", 36080)
