@@ -10,4 +10,12 @@
             </div>
         </NuxtLink>
     </div>
+    <LoadingIndicator>
+        <div class="flex justify-center items-center backdrop-blur-lg" style="position: fixed; left: 0; top: 0; width: 100svw; height: 100svh;">
+            <img src="/images/beet.png" class="w-1/12 animate-pulse ">
+        </div>
+    </LoadingIndicator>
 </template>
+<style>
+
+</style>

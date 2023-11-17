@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import VueMarkdown from 'vue-markdown-render'
 import navbar from '~/components/navbar.vue';
 import { Codemirror } from 'vue-codemirror'
@@ -7,7 +7,7 @@ import { python } from '@codemirror/lang-python'
 import { oneDark } from '@codemirror/theme-one-dark'
 
 const view = shallowRef()
-const handleReady = (payload) => {
+const handleReady = (payload: any) => {
     view.value = payload.view
 }
 
@@ -15,7 +15,7 @@ var config = useRuntimeConfig()
 var route = useRoute()
 
 var fetch = await useFetch("/api/challenge/" + route.query.id, { baseURL: config.public.apiBaseUrl })
-var challenge = fetch.data.value
+var challenge = fetch.data.value as any
 
 
 const code = ref(challenge.code[Object.keys(challenge.code)[0]].setup)
@@ -25,12 +25,12 @@ if (Object.keys(challenge.code)[0] == "python") {
     lang = python()
 }
 const selectedLang = ref(Object.keys(challenge.code)[0])
-const extensions = ref([lang, oneDark])
+const extensions = ref<any>([lang, oneDark])
 const showOutput = ref(false)
 const codeOutput = ref("")
 const runMsg = ref("Run Code")
 
-function changeLang(event) {
+function changeLang(event: any) {
     selectedLang.value = event.target.value
     if (event.target.value == "python") {
         extensions.value = [python(), oneDark]
@@ -45,13 +45,61 @@ async function runCode() {
 
     showOutput.value = true
     var data = {}
+    //@ts-ignore
     data.lang = selectedLang.value
+    //@ts-ignore
     data.code = code.value
 
     var fetch = await useFetch("/api/runcode/" + route.query.id, { baseURL: config.public.apiBaseUrl, method: "POST", body: data })
-    codeOutput.value = fetch.data.value
+    codeOutput.value = parseResultToHTML(fetch.data.value as any)
     runMsg.value = "Run Code"
 
+}
+
+function parseResultToHTML(result: string): string {
+    const lines: string[] = result.split("\n");
+
+    if (result.startsWith("<SYSTEM::>")) {
+        return result.replace("<SYSTEM::>", "");
+    }
+
+    const parsedOutput: string[] = [];
+    for (const line of lines) {
+        if (line === "") {
+            continue;
+        }
+        const [prefix, content] = line.split("::>");
+        if (prefix === "<DESCRIBE") {
+            parsedOutput.push(`<p>${content.trim()}</p>`);
+        } else if (prefix === "<IT") {
+            const currentTest = content.trim();
+            parsedOutput.push(`<p style="margin-left: 20px;">${currentTest}</p>`);
+        } else if (prefix === "<FAILED") {
+            parsedOutput.push(
+                `<p style="margin-left: 40px; color: red; font-weight: bold;">Failed:</p>` +
+                `<p style="margin-left: 60px;">${content.trim()}</p>`
+            );
+        } else if (prefix === "<PASSED") {
+            parsedOutput.push(
+                `<p style="margin-left: 40px; color: green; font-weight: bold;">Passed:</p>` +
+                `<p style="margin-left: 60px;">${content.trim()}</p>`
+            );
+        }
+    }
+
+    lines.reverse();
+    let completedIn: number = 0.0;
+    for (const line of lines) {
+        if (line.startsWith("<COMPLETEDIN::>")) {
+            completedIn = parseFloat(line.replace("<COMPLETEDIN::>", ""));
+            break;
+        }
+    }
+
+    return (
+        `<div>${parsedOutput.join("\n")}</div>` +
+        `<p style="margin-top: 10px;">Completed in: ${completedIn} seconds</p>`
+    );
 }
 
 </script>
@@ -69,8 +117,7 @@ async function runCode() {
                 </div>
                 <div class="overflow-y-scroll overflow-x-hidden">
                     <vue-markdown v-show="!showOutput" :source="challenge.description" :breaks="true"></vue-markdown>
-                    <div v-show="showOutput">
-                        <p>{{ codeOutput }}</p>
+                    <div v-show="showOutput" v-html="codeOutput">
                     </div>
                 </div>
             </div>
@@ -79,8 +126,9 @@ async function runCode() {
                     <div class="flex flex-row justify-between w-full">
                         <div>
                             <button class="bg-gray-500 px-3 py-1 rounded-md text-white font-bold"
-                                style="background-color: #2d7567;" @click="runCode()" :disabled="runMsg == 'Running...'">{{ runMsg }}</button>
-                        </div> 
+                                style="background-color: #2d7567;" @click="runCode()" :disabled="runMsg == 'Running...'">{{
+                                    runMsg }}</button>
+                        </div>
                         <select class="w-fit" @change="changeLang($event)">
                             <option v-for="lang in Object.keys(challenge.code)" :value="lang">{{ lang }}</option>
                         </select>
@@ -88,9 +136,6 @@ async function runCode() {
                     <codemirror v-model="code" placeholder="Write your code here" :style="{ height: '100%', width: '100%' }"
                         :autofocus="true" :indent-with-tab="true" :tab-size="4" :extensions="extensions"
                         @ready="handleReady" />
-                </div>
-                <div>
-
                 </div>
             </div>
         </div>
