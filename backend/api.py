@@ -30,7 +30,7 @@ def search():
     if search_query["text"] != '':
         mongo_query["$text"] = {'$search': 'coin'}
     if search_query["lang"] != "any":
-        mongo_query[f"code.{search_query["lang"]}"] = {"$exists": True}
+        mongo_query[f'code.{search_query["lang"]}'] = {"$exists": True}
     if search_query["difficulty"] != "any":
         mongo_query["difficulty"] = int(search_query["difficulty"])
     print(mongo_query)
@@ -68,4 +68,4 @@ def run_code(id):
     response = validateCode(recivedData["code"], doc["code"][recivedData["lang"]]["exampleFixture"], recivedData["lang"])
     return response
 
-app.run("0.0.0.0", 36081)
+app.run("0.0.0.0", 3001)

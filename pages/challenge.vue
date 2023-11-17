@@ -101,6 +101,17 @@ function parseResultToHTML(result: string): string {
         `<p style="margin-top: 10px;">Completed in: ${completedIn} seconds</p>`
     );
 }
+function handleChange(data:any)
+{
+    localStorage.setItem(route.query.id as string, data)
+}
+onMounted(()=>{
+    var storedCode = localStorage.getItem(route.query.id as string)
+    if (storedCode)
+    {
+        code.value = storedCode
+    }
+})
 
 </script>
 
@@ -135,7 +146,7 @@ function parseResultToHTML(result: string): string {
                     </div>
                     <codemirror v-model="code" placeholder="Write your code here" :style="{ height: '100%', width: '100%' }"
                         :autofocus="true" :indent-with-tab="true" :tab-size="4" :extensions="extensions"
-                        @ready="handleReady" />
+                        @ready="handleReady" @change="handleChange"/>
                 </div>
             </div>
         </div>
